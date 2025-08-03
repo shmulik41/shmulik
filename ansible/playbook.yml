@@ -1,0 +1,29 @@
+- name: Deploy Flask Docker container on EC2
+  hosts: web
+  become: true
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: true
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Pull Docker image from DockerHub
+      docker_image:
+        name: shmulik41/flask:v1
+        source: pull
+
+    - name: Run Flask container
+      docker_container:
+        name: flask-app
+        image: shmulik41/flask:v1
+
+        state: started
+        ports:
+          - "8080:80"
